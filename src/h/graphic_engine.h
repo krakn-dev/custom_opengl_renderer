@@ -16,19 +16,19 @@
 class GraphicEngine {
 public:
   GLFWwindow *window;
-  CameraObject *camera;
+  CameraObject camera;
 
   GraphicEngine();
   void render();
-  void addObject(ShapeObject *newObject);
-  void addCamera(CameraObject *newCamera);
+  void addObject(ShapeObject newObject);
+  void addCamera(CameraObject newCamera);
 
 private:
   std::vector<ShapeObject> objects;
   Shader *shader;
 
   bool objectsNeedUpdate;
-  void updateCamera();
+  void updateCameraUniform();
   void setupVBOandVAO();
   void compileShader();
   void initOpenGL();

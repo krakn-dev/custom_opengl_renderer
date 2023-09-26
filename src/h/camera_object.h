@@ -9,11 +9,11 @@
 class CameraObject : public GraphicEngineObject {
 public:
   glm::mat4 projectionMatrix;
+
   CameraObject();
-  void setProjectionMatrix(float *fov, float windowWidth, float windowHeight,
-                           float *near, float *far);
-  void setModelMatrixRotation(float *rotationDegrees, glm::vec3 *rotationAxis);
-  void setModelMatrixTransform(glm::vec3 *translation);
+  void setProjectionMatrix(float fov, float windowWidth, float windowHeight,
+                           float near, float far);
+  void syncMatrix();
 };
 
 #endif // CAMERA_OBJECT_H_

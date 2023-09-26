@@ -9,13 +9,11 @@
 
 class ShapeObject : public GraphicEngineObject {
 public:
-  glm::vec3 *color;
+  glm::vec3 color;
   std::vector<glm::vec4> shape;
 
-  ShapeObject(glm::mat4 *modelMatrix, std::vector<glm::vec4> shape,
-              glm::vec3 *color);
-  void setModelMatrixRotation(float *rotationDegrees, glm::vec3 *rotationAxis);
-  void setModelMatrixTransform(glm::vec3 *translation);
-  void applyModel();
+  ShapeObject(std::vector<glm::vec4> shape, glm::vec3 color);
+  std::vector<glm::vec4> getTransformedShape();
+  void syncMatrix();
 };
 #endif // SHAPE_OBJECT_H_

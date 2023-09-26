@@ -7,9 +7,13 @@
 
 class GraphicEngineObject {
 public:
-  glm::mat4 *modelMatrix;
-  GraphicEngineObject(glm::mat4 *modelMatrix = nullptr);
+  glm::mat4 modelMatrix;
+  glm::vec3 position;
+  glm::vec3 rotation;
+
+  GraphicEngineObject();
   ~GraphicEngineObject();
+  void syncMatrix();
 };
 
 #endif // GRAPHIC_ENGINE_OBJECT_H_
