@@ -18,6 +18,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 int main() {
   GraphicEngine graphicEngine = GraphicEngine();
+  InputManager inputManager = InputManager();
   GLFWwindow *window = graphicEngine.window;
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -40,32 +41,13 @@ int main() {
   ShapeObject shapeObject = ShapeObject(triangle, color);
   graphicEngine.addObject(shapeObject);
 
+  auto fnFunc = &CameraObject::onMovement;
+  auto movementAction =
+      MovementAction(std::bind(fnFunc, camera, std::placeholders::_1));
+  auto id = inputManager.addAction(movementAction);
+
   while (!glfwWindowShouldClose(window)) {
-
-    cameraPosition = glm::vec3(0);
-    const float movementSpeed = 0.05f; // adjust accordingly
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-      cameraPosition.z -= 1;
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-      cameraPosition.z += 1;
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-      cameraPosition.x -= 1;
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-      cameraPosition.x += 1;
-
-    cameraRotation = glm::vec3(0);
-    const float rotationSpeed = 0.05f; // adjust accordingly
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-      cameraRotation.x -= 1;
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-      cameraRotation.x += 1;
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-      cameraRotation.y -= 1;
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-      cameraRotation.y += 1;
-
-    graphicEngine.camera.rotation += cameraRotation * rotationSpeed;
-    graphicEngine.camera.position += cameraPosition * movementSpeed;
+    inputManager.run(window);
     graphicEngine.render();
   }
   glfwTerminate();

@@ -29,37 +29,38 @@ void GraphicEngine::render() {
   }
   objectsNeedUpdate = true;
 
-  std::vector<float> attributeVector = {};
-
-  int numberOfVertices = 0;
-
-  for (int iObj = 0; iObj < objects.size(); iObj++) { // for every object
-    //    std::cout << std::endl;
-    //    std::cout << std::endl;
+  // Sync matrix with new position and rotation
+  for (int iObj = 0; iObj < objects.size(); iObj++) {
     objects[iObj].syncMatrix();
+  }
+
+  // Get number of vertices
+  int numberOfVertices = 0;
+  for (int iObj = 0; iObj < objects.size(); iObj++) { // for every object
+    for (int iVex = 0;
+         iVex < objects[iObj].shape.size(); // for every shape vertex
+         iVex++) {
+      numberOfVertices++;
+    }
+  }
+
+  // Get vertices and colors inside a vector [vertex, color, vertex...]
+  std::vector<float> attributeVector = {};
+  for (int iObj = 0; iObj < objects.size(); iObj++) { // for every object
     std::vector<glm::vec4> shape = objects[iObj].getTransformedShape();
 
-    for (int iVex = 0; iVex < shape.size(); // for every shape vertex
+    for (int iVex = 0; iVex < shape.size(); // for every vertex in shape
          iVex++) {
 
       float *vertex = glm::value_ptr(shape[iVex]);
-      for (int iVec = 0; iVec < 4; iVec++) {
+      for (int iVec = 0; iVec < 4; iVec++) { // for every vertex
         attributeVector.push_back(vertex[iVec]);
-        //        std::cout << vertex[iVec] << ", ";
       }
-      //      std::cout << std::endl;
 
       float *colors = glm::value_ptr(objects[iObj].color);
-      for (int iVec = 0; iVec < 3; iVec++) {
+      for (int iVec = 0; iVec < 3; iVec++) { // for every color
         attributeVector.push_back(colors[iVec]);
-        //        std::cout << colors[iVec] << ", ";
       }
-
-      numberOfVertices++;
-      //      std::cout << std::endl;
-      //      std::cout << "------ " << iVex << std::endl;
-      //      std::cout << std::endl;
-      //      std::cout << std::endl;
     }
   }
 
@@ -71,7 +72,7 @@ void GraphicEngine::render() {
   // Vertices
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void *)0);
 
-  // color
+  // Colors
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float),
                         (void *)(4 * sizeof(float)));
 
