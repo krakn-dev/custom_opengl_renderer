@@ -28,7 +28,6 @@ void ShapeObject::syncMatrix() {
 std::vector<glm::vec4> ShapeObject::getTransformedShape() {
   std::vector<glm::vec4> transformedShape = {};
   for (int i = 0; i < shape.size(); i++) {
-    //    std::cout << glm::to_string(modelMatrix) << std::endl;
     transformedShape.push_back(GraphicEngineObject::modelMatrix * shape[i]);
   }
   return transformedShape;

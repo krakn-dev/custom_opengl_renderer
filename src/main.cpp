@@ -16,19 +16,26 @@
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
+std::vector<std::function<void(GLFWwindow *, int, int)>>
+    InputManager::mouseCallbacks;
 int main() {
   GraphicEngine graphicEngine = GraphicEngine();
   InputManager inputManager = InputManager();
   GLFWwindow *window = graphicEngine.window;
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
   glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
   CameraObject camera = CameraObject();
-  glm::vec3 cameraRotation = glm::vec3(0.0f, 0.0f, -3.0f);
-  camera.rotation = cameraRotation;
+
+  InputManager::mouseCallbacks.push_back(
+      std::bind(&CameraObject::onLookAround, &camera, std::placeholders::_1,
+                std::placeholders::_2, std::placeholders::_3));
+
+  glfwSetCursorPosCallback(window, &InputManager::onMouseEvent);
   camera.position = cameraPosition;
 
-  graphicEngine.addCamera(camera);
+  graphicEngine.addCamera(&camera);
 
   // INIT SHAPE
 
@@ -39,15 +46,19 @@ int main() {
   };
   glm::vec3 color = glm::vec3(1);
   ShapeObject shapeObject = ShapeObject(triangle, color);
-  graphicEngine.addObject(shapeObject);
+  graphicEngine.addObject(&shapeObject);
 
   auto fnFunc = &CameraObject::onMovement;
-  auto movementAction =
-      MovementAction(std::bind(fnFunc, camera, std::placeholders::_1));
+  auto movementAction = MovementAction(
+      std::bind(&CameraObject::onMovement, &camera, std::placeholders::_1));
   auto id = inputManager.addAction(movementAction);
 
+  inputManager.window = window;
   while (!glfwWindowShouldClose(window)) {
-    inputManager.run(window);
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+      camera.rotation += 1;
+    }
+    inputManager.run();
     graphicEngine.render();
   }
   glfwTerminate();
@@ -56,5 +67,3 @@ int main() {
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
 }
-
-void processInput(GLFWwindow *window) {}

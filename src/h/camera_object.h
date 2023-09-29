@@ -9,12 +9,18 @@
 
 class CameraObject : public GraphicEngineObject {
 public:
+  glm::vec3 cameraFront;
+  bool firstMouse;
   glm::mat4 projectionMatrix;
+  double lastXPosition;
+  double lastYPosition;
+  float speed;
 
   CameraObject();
   void setProjectionMatrix(float fov, float windowWidth, float windowHeight,
                            float near, float far);
   void syncMatrix();
+  void onLookAround(GLFWwindow *window, double xPos, double yPos);
   void onMovement(CallbackArguments direction);
 };
 

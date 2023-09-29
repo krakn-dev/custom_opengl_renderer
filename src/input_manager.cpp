@@ -20,7 +20,15 @@ int InputManager::addAction(ActionBehavior newAction) {
   actions.push_back(newAction);
   return newAction.ID;
 }
-void InputManager::run(GLFWwindow *window) {
+
+void InputManager::onMouseEvent(GLFWwindow *window, double xPosition,
+                                double yPosition) {
+  for (int i = 0; i < mouseCallbacks.size(); i++) {
+    mouseCallbacks[i](window, xPosition, yPosition);
+  }
+}
+
+void InputManager::run() {
   if (actions.size() == 0) {
     return;
   }
@@ -42,7 +50,17 @@ void InputManager::run(GLFWwindow *window) {
             alreadyCalledCallback = true;
             break;
           }
-          sumVector += actions[iAc].triggerOutputs[iIn];
+
+          // check variant type and sum to upper vector
+          auto *vec2 =
+              std::get_if<glm::vec2>(&actions[iAc].triggerOutputs[iIn]);
+          if (vec2 == nullptr) {
+            std::cout << "wrong action class: " << typeid(actions[iAc]).name()
+                      << std::endl;
+            return;
+          }
+          sumVector += *vec2;
+          break;
         }
       }
       if (alreadyCalledCallback) {

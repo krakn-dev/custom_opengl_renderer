@@ -14,9 +14,14 @@
 
 class InputManager {
 public:
+  static std::vector<std::function<void(GLFWwindow *, int, int)>>
+      mouseCallbacks;
   int addAction(ActionBehavior newAction); // return id
   void removeAction(int id);
-  void run(GLFWwindow *window);
+  void run();
+  GLFWwindow *window;
+  static void onMouseEvent(GLFWwindow *window, double xPosition,
+                           double yPosition);
 
 private:
   std::vector<ActionBehavior> actions;

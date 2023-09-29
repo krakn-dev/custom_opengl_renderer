@@ -12,7 +12,7 @@ GraphicEngine::GraphicEngine() {
   shader->use();
 }
 
-void GraphicEngine::addCamera(CameraObject newCamera) { camera = newCamera; }
+void GraphicEngine::addCamera(CameraObject *newCamera) { camera = newCamera; }
 
 void GraphicEngine::render() {
   shader->use();
@@ -31,14 +31,14 @@ void GraphicEngine::render() {
 
   // Sync matrix with new position and rotation
   for (int iObj = 0; iObj < objects.size(); iObj++) {
-    objects[iObj].syncMatrix();
+    objects[iObj]->syncMatrix();
   }
 
   // Get number of vertices
   int numberOfVertices = 0;
   for (int iObj = 0; iObj < objects.size(); iObj++) { // for every object
     for (int iVex = 0;
-         iVex < objects[iObj].shape.size(); // for every shape vertex
+         iVex < objects[iObj]->shape.size(); // for every shape vertex
          iVex++) {
       numberOfVertices++;
     }
@@ -47,7 +47,7 @@ void GraphicEngine::render() {
   // Get vertices and colors inside a vector [vertex, color, vertex...]
   std::vector<float> attributeVector = {};
   for (int iObj = 0; iObj < objects.size(); iObj++) { // for every object
-    std::vector<glm::vec4> shape = objects[iObj].getTransformedShape();
+    std::vector<glm::vec4> shape = objects[iObj]->getTransformedShape();
 
     for (int iVex = 0; iVex < shape.size(); // for every vertex in shape
          iVex++) {
@@ -57,7 +57,7 @@ void GraphicEngine::render() {
         attributeVector.push_back(vertex[iVec]);
       }
 
-      float *colors = glm::value_ptr(objects[iObj].color);
+      float *colors = glm::value_ptr(objects[iObj]->color);
       for (int iVec = 0; iVec < 3; iVec++) { // for every color
         attributeVector.push_back(colors[iVec]);
       }
@@ -81,13 +81,13 @@ void GraphicEngine::render() {
 }
 
 void GraphicEngine::updateCameraUniform() {
-  camera.syncMatrix();
+  camera->syncMatrix();
   int cameraLoc = glGetUniformLocation(shader->ID, "camera");
   glUniformMatrix4fv(cameraLoc, 1, GL_FALSE,
-                     glm::value_ptr(camera.modelMatrix));
+                     glm::value_ptr(camera->modelMatrix));
 }
 
-void GraphicEngine::addObject(ShapeObject newObject) {
+void GraphicEngine::addObject(ShapeObject *newObject) {
   objects.push_back(newObject);
   objectsNeedUpdate = true;
 }
@@ -111,6 +111,7 @@ void GraphicEngine::initOpenGL() {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
   GLFWwindow *window = glfwCreateWindow(
       (float)WINDOW_WIDTH, (float)WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
   if (window == NULL) {
